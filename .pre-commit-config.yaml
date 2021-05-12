@@ -1,0 +1,27 @@
+repos:
+  - repo: local
+    hooks:
+      - id: formatter
+        name: run formatter
+        entry: autopep8 --in-place --aggressive
+        language: system
+        types: [python]
+        stages: [push, commit]
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
+      - id: no-commit-to-branch
+      - id: double-quote-string-fixer
+
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v2.5.0
+    hooks:
+      - id: reorder-python-imports
+        args: [--application-directories, '.:app', --py37-plus]
+
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.6.2
+    hooks:
+      - id: bandit
+        args: ['-iii', '-ll']
