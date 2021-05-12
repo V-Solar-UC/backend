@@ -1,5 +1,9 @@
 # V-Solar backend :computer:
 
+## Importante:
+
+despues de clonar el repositorio, correr `pip install pre-commit` y luego `pre-commit install`.
+
 ## How to:
 
 ### run containers:
@@ -32,15 +36,15 @@
 
 - **loguru**: logging to stdout and disk (overrides uvicorn handlers)
 
-- **httpx & asgi-lifespan**: allow pytest to run tests asynchronously with pytest-asyncio (needed to query database in tests as it only supports async queries)
+- **httpx & asgi-lifespan**: permite a pytest correr tests con funciones asincronas (necesarias para hacer queries a la db)
 
 ## TODO:
 
-- [ ] define database schemas
-- [ ] create migrations
-- [ ] define api endpoints
-- [ ] create tests for those endpoints
-- [ ] write api routes until tests pass
+- [ ] definir esquemas
+- [ ] crear migraciones
+- [ ] definir api endpoints
+- [ ] crear tests para esos endpoints
+- [ ] programar los endpoints para que pasen los tests
 
 ### relevant resources:
 
