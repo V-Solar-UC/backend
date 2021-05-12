@@ -2,7 +2,11 @@
 
 ## Importante:
 
-despues de clonar el repositorio, correr `pip install pre-commit` y luego `pre-commit install`.
+despues de clonar el repositorio:
+
+1. correr `pip install pre-commit` y luego `pre-commit install`.
+
+2. correr `mkdir data && mkdir pgadmin`
 
 ## How to:
 
