@@ -32,7 +32,7 @@ despues de clonar el repositorio, correr `pip install pre-commit` y luego `pre-c
 
 - **databases**: database driver with support for async web frameworks and both raw sql queries and SQLAlchemy built queries
 
-- **pydantic**: data parsing and validation
+- **pydantic**: data parsing, data validation and orm
 
 - **loguru**: logging to stdout and disk (overrides uvicorn handlers)
 
