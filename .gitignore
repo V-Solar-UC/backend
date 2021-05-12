@@ -1,0 +1,8 @@
+pgadmin/
+data/
+log/
+.env
+.vim
+__pycache__
+.DS_Store
+.pytest_cache/
