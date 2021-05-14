@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.core.config import logger
+from app.core.logging import logger
 
 router = APIRouter()
 

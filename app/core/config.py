@@ -1,13 +1,8 @@
 import logging
-import sys
 
 from databases import DatabaseURL
-from loguru import logger
 from starlette.config import Config
 from starlette.datastructures import Secret
-
-from .logging import format_record
-from .logging import InterceptHandler
 
 config = Config('.env')
 
@@ -29,20 +24,3 @@ DATABASE_URL = config(
 DEBUG: bool = config('DEBUG', cast=bool, default=False)
 
 LOGGING_LEVEL = logging.DEBUG if DEBUG else logging.INFO
-LOGGERS = ('uvicorn.asgi', 'uvicorn.access', 'uvicorn')
-
-logging.getLogger().handlers = [InterceptHandler()]
-for logger_name in LOGGERS:
-    logging_logger = logging.getLogger(logger_name)
-    logging_logger.handlers = [InterceptHandler(level=LOGGING_LEVEL)]
-
-# set format
-logger.configure(
-    handlers=[{'sink': sys.stdout,
-               'level': LOGGING_LEVEL, 'format': format_record}]
-)
-
-diagnose = True if DEBUG else False  # avoid leaking sensitive data in production
-# save logs to disk
-logger.add('log/access.log', format=format_record, enqueue=True, backtrace=True,
-           diagnose=diagnose, compression='zip', rotation='10 MB', retention='1 month')

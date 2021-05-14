@@ -4,7 +4,7 @@ from databases import Database
 from fastapi import FastAPI
 
 from app.core.config import DATABASE_URL
-from app.core.config import logger
+from app.core.logging import logger
 
 
 async def connect_to_db(app: FastAPI) -> None:
