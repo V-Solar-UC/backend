@@ -8,11 +8,13 @@ despues de clonar el repositorio:
 
 2. correr `mkdir data && mkdir pgadmin`
 
+3. correr `cp .env.example .env` y rellenar variables de entorno
+
 ## How to:
 
 ### run containers:
 
-`docker compose up`
+`docker compose up --build`
 
 ### connect to postgres:
 

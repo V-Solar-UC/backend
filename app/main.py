@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes.v1 import api_v1
 from app.core import config
+from app.core import logging
 from app.core import tasks
 
 

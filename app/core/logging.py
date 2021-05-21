@@ -1,8 +1,12 @@
 import logging
+import sys
 from pprint import pformat
 
 from loguru import logger
 from loguru._defaults import LOGURU_FORMAT
+
+from .config import DEBUG
+from .config import LOGGING_LEVEL
 
 
 class InterceptHandler(logging.Handler):
@@ -55,3 +59,21 @@ def format_record(record: dict) -> str:
 
     format_string += '{exception}\n'
     return format_string
+
+
+logging.getLogger().handlers = [InterceptHandler()]
+for logger_name in ('uvicorn.asgi', 'uvicorn.access', 'uvicorn'):
+    logging_logger = logging.getLogger(logger_name)
+    logging_logger.handlers = [InterceptHandler(level=LOGGING_LEVEL)]
+
+# set format
+logger.configure(
+    handlers=[{'sink': sys.stdout,
+               'level': LOGGING_LEVEL, 'format': format_record}]
+)
+
+diagnose = True if DEBUG else False  # avoid leaking sensitive data in production
+
+# save logs to disk
+logger.add('log/access.log', format=format_record, enqueue=True, backtrace=True,
+           diagnose=diagnose, compression='zip', rotation='10 MB', retention='1 month')
