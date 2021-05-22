@@ -9,7 +9,7 @@ repos:
         stages: [push, commit]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.4.0
+    rev: v4.0.1
     hooks:
       - id: no-commit-to-branch
       - id: double-quote-string-fixer
@@ -21,7 +21,12 @@ repos:
         args: [--application-directories, '.:app', --py37-plus]
 
   - repo: https://github.com/pycqa/bandit
-    rev: 1.6.2
+    rev: 1.7.0
     hooks:
       - id: bandit
         args: ['-iii', '-ll']
+
+  - repo: https://github.com/jorisroovers/gitlint
+    rev: v0.15.1
+    hooks:
+      - id: gitlint
