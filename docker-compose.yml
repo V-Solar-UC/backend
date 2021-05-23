@@ -10,23 +10,19 @@ services:
       - POSTGRES_DB:-postgres
     env_file: .env
     volumes:
-      - './data:/var/lib/postgresql/data'
+      - dbdata:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - 54432:5432
 
   pgadmin:
     image: dpage/pgadmin4
     restart: unless-stopped
     depends_on:
       - db
-    env_file: .env
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-pgadmin4@pgadmin.org}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-      - './pgadmin:/root/.pgadmin'
-
     ports:
       - 5050:80
 
@@ -43,3 +39,6 @@ services:
       - 3001:8000
     volumes:
       - '.:/app'
+
+volumes:
+  dbdata:

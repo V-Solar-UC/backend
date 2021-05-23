@@ -6,7 +6,7 @@ despues de clonar el repositorio:
 
 1. correr `pip install pre-commit`, luego `pre-commit install` y finalmente `pre-commit install --hook-type commit-msg`.
 
-2. correr `mkdir data && mkdir pgadmin`
+2. correr `mkdir pgadmin`
 
 3. correr `cp .env.example .env` y rellenar variables de entorno
 
