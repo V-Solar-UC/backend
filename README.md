@@ -4,7 +4,7 @@
 
 despues de clonar el repositorio:
 
-1. correr `pip install pre-commit` y luego `pre-commit install`.
+1. correr `pip install pre-commit`, luego `pre-commit install` y finalmente `pre-commit install --hook-type commit-msg`.
 
 2. correr `mkdir data && mkdir pgadmin`
 
@@ -69,3 +69,7 @@ despues de clonar el repositorio:
 [running tests asynchronously](https://www.jeffastor.com/blog/testing-fastapi-endpoints-with-docker-and-pytest)
 
 [why async tests](https://fastapi.tiangolo.com/advanced/async-tests/)
+
+[sqlalchemy events](https://docs.sqlalchemy.org/en/14/orm/events.html)
+
+[how sqlalchemy sessions work](https://docs.sqlalchemy.org/en/13/orm/session_basics.html)
