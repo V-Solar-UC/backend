@@ -31,9 +31,11 @@ services:
       context: .
       args:
         - INSTALL_DEV=${INSTALL_DEV:-false}
+    restart: unless-stopped
     depends_on:
       - db
-    command: 'poetry run uvicorn app.asgi:app --reload --reload-dir app --log-level debug --host 0.0.0.0 --port 8000'
+    command: sh -c "poetry run alembic upgrade head &&
+      poetry run uvicorn app.asgi:app --reload --reload-dir app --log-level debug --host 0.0.0.0 --port 8000"
     env_file: .env
     ports:
       - 3001:8000
