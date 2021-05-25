@@ -12,9 +12,15 @@ despues de clonar el repositorio:
 
 ## How to:
 
-### run containers:
+### start containers:
 
 `docker compose up --build`
+
+### run migrations (upgrade or downgrade):
+
+`docker compose exec api poetry run alembic upgrade head`
+
+`docker compose exec api poetry run alembic downgrade base`
 
 ### connect to postgres:
 
@@ -73,3 +79,5 @@ despues de clonar el repositorio:
 [sqlalchemy events](https://docs.sqlalchemy.org/en/14/orm/events.html)
 
 [how sqlalchemy sessions work](https://docs.sqlalchemy.org/en/13/orm/session_basics.html)
+
+[sqlalchemy queries](https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#tutorial-orm-data-manipulation)
