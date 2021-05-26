@@ -1,38 +1,24 @@
 import os
 
-from databases import Database
 from fastapi import FastAPI
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.orm import sessionmaker
 
 from app.core.config import DATABASE_URL
 from app.core.logging import logger
 
 
-async def connect_to_db(app: FastAPI) -> None:
+async def create_engine(app: FastAPI) -> None:
     # these can be configured in config as well
     DB_URL = f'{DATABASE_URL}_test' if os.environ.get(
         'TESTING') else DATABASE_URL
 
-    fr = True if os.environ.get('TESTING') else False
+    engine = create_async_engine(DB_URL, echo=True)
+    async_session = sessionmaker(
+        engine, class_=AsyncSession, expire_on_commit=False
+    )
 
-    database = Database(DB_URL, min_size=2, max_size=10, force_rollback=fr)
+    logger.info('CREATED SQLALCHEMY ENGINE')
 
-    try:
-        logger.info('--- CONNECTING TO DB ---')
-        await database.connect()
-        logger.info('--- CONNECTED TO DB ---')
-        app.state.db = database
-    except Exception as e:
-        logger.warning('--- DB CONNECTION ERROR ---')
-        logger.warning(e)
-        logger.warning('--- DB CONNECTION ERROR ---')
-
-
-async def close_db_connection(app: FastAPI) -> None:
-    try:
-        logger.info('--- DISCONNECTING FROM DB ---')
-        await app.state.db.disconnect()
-        logger.info('--- DISCONNECTED FROM DB ---')
-    except Exception as e:
-        logger.warning('--- DB DISCONNECT ERROR ---')
-        logger.warning(e)
-        logger.warning('--- DB DISCONNECT ERROR ---')
+    app.state.async_session = async_session
