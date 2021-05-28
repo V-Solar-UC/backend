@@ -38,25 +38,15 @@ despues de clonar el repositorio:
 
 - **alembic**: migrations
 
-- **SQLAlchemy**: migrations
+- **SQLAlchemy**: orm and database connection
 
-- **pytest**: unit tests
+- **pytest**: tests
 
-- **databases**: database driver with support for async web frameworks and both raw sql queries and SQLAlchemy built queries
-
-- **pydantic**: data parsing, data validation and orm
+- **pydantic**: data parsing, data validation (input and output)
 
 - **loguru**: logging to stdout and disk (overrides uvicorn handlers)
 
 - **httpx & asgi-lifespan**: permite a pytest correr tests con funciones asincronas (necesarias para hacer queries a la db)
-
-## TODO:
-
-- [ ] definir esquemas
-- [ ] crear migraciones
-- [ ] definir api endpoints
-- [ ] crear tests para esos endpoints
-- [ ] programar los endpoints para que pasen los tests
 
 ### relevant resources:
 
