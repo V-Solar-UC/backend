@@ -1,33 +1,50 @@
-import logging
+import asyncio
 import os
 from logging.config import fileConfig
 
-import alembic
 from alembic import context
-from psycopg2 import DatabaseError
-from sqlalchemy import create_engine
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.sql import text
 
 from app.core.config import DATABASE_URL
 from app.core.config import POSTGRES_DB
+from app.core.logging import logger
+from app.db import models
 
+# models metadata for autogenerate support
+target_metadata = models.Base.metadata
 
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
 config = context.config
 
+# Interpret the config file for Python logging.
+# This line sets up loggers basically.
 fileConfig(config.config_file_name)
-
-logger = logging.getLogger('alembic.env')
 
 
 def run_migrations_offline():
-    """ Run migrations in 'offline' mode. """
+    """Run migrations in 'offline' mode.
+
+    This configures the context with just a URL
+    and not an Engine, though an Engine is acceptable
+    here as well.  By skipping the Engine creation
+    we don't even need a DBAPI to be available.
+
+    Calls to context.execute() here emit the given string to the
+    script output.
+
+    """
     if os.environ.get('TESTING'):
-        raise DatabaseError(
+        raise Exception(
             'Running testing migrations offline currently not permitted.')
 
     context.configure(
-        url=str(DATABASE_URL),
+        url=DATABASE_URL,
+        target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={'paramstyle': 'named'},
     )
@@ -36,7 +53,14 @@ def run_migrations_offline():
         context.run_migrations()
 
 
-def run_migrations_online():
+def do_run_migrations(connection):
+    context.configure(connection=connection, target_metadata=target_metadata)
+
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+async def run_migrations_online():
     """Run migrations in 'online' mode.
 
     In this scenario we need to create an Engine
@@ -44,39 +68,36 @@ def run_migrations_online():
 
     """
     DB_URL = f'{DATABASE_URL}_test' if os.environ.get(
-        'TESTING') else str(DATABASE_URL)
-    # handle testing config for migrations
+        'TESTING') else DATABASE_URL
+
     if os.environ.get('TESTING'):
         # connect to primary db
-        default_engine = create_engine(
-            str(DATABASE_URL), isolation_level='AUTOCOMMIT')
-        # drop testing db if it exists and create a fresh one
-        with default_engine.connect() as default_conn:
-            default_conn.execute(f'DROP DATABASE IF EXISTS {POSTGRES_DB}_test')
-            default_conn.execute(f'CREATE DATABASE {POSTGRES_DB}_test')
+        engine = create_async_engine(
+            DATABASE_URL, echo=True, isolation_level='AUTOCOMMIT')
+
+        async with engine.connect() as connection:
+            await connection.execute(text(f'DROP DATABASE IF EXISTS {POSTGRES_DB}_test'))
+            await connection.execute(text(f'CREATE DATABASE {POSTGRES_DB}_test'))
 
     connectable = config.attributes.get('connection', None)
     config.set_main_option('sqlalchemy.url', DB_URL)
 
     if connectable is None:
-        connectable = engine_from_config(
-            config.get_section(config.config_ini_section),
-            prefix='sqlalchemy.',
-            poolclass=pool.NullPool,
+        connectable = AsyncEngine(
+            engine_from_config(
+                config.get_section(config.config_ini_section),
+                prefix='sqlalchemy.',
+                poolclass=pool.NullPool,
+                future=True,
+            )
         )
 
-    with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=None
-        )
-
-        with context.begin_transaction():
-            context.run_migrations()
+    async with connectable.connect() as connection:
+        await connection.run_sync(do_run_migrations)
 
 
 if context.is_offline_mode():
-    logger.info('Running migrations offline')
+    logger.info('RUNNING OFFLINE')
     run_migrations_offline()
 else:
-    logger.info('Running migrations online')
-    run_migrations_online()
+    asyncio.run(run_migrations_online())

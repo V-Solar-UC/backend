@@ -4,17 +4,23 @@
 
 despues de clonar el repositorio:
 
-1. correr `pip install pre-commit` y luego `pre-commit install`.
+1. correr `pip install pre-commit`, luego `pre-commit install` y finalmente `pre-commit install --hook-type commit-msg`.
 
-2. correr `mkdir data && mkdir pgadmin`
+2. correr `mkdir pgadmin`
 
 3. correr `cp .env.example .env` y rellenar variables de entorno
 
 ## How to:
 
-### run containers:
+### start containers:
 
 `docker compose up --build`
+
+### run migrations (upgrade or downgrade):
+
+`docker compose exec api poetry run alembic upgrade head`
+
+`docker compose exec api poetry run alembic downgrade base`
 
 ### connect to postgres:
 
@@ -32,25 +38,15 @@ despues de clonar el repositorio:
 
 - **alembic**: migrations
 
-- **SQLAlchemy**: migrations
+- **SQLAlchemy**: orm and database connection
 
-- **pytest**: unit tests
+- **pytest**: tests
 
-- **databases**: database driver with support for async web frameworks and both raw sql queries and SQLAlchemy built queries
-
-- **pydantic**: data parsing, data validation and orm
+- **pydantic**: data parsing, data validation (input and output)
 
 - **loguru**: logging to stdout and disk (overrides uvicorn handlers)
 
 - **httpx & asgi-lifespan**: permite a pytest correr tests con funciones asincronas (necesarias para hacer queries a la db)
-
-## TODO:
-
-- [ ] definir esquemas
-- [ ] crear migraciones
-- [ ] definir api endpoints
-- [ ] crear tests para esos endpoints
-- [ ] programar los endpoints para que pasen los tests
 
 ### relevant resources:
 
@@ -69,3 +65,9 @@ despues de clonar el repositorio:
 [running tests asynchronously](https://www.jeffastor.com/blog/testing-fastapi-endpoints-with-docker-and-pytest)
 
 [why async tests](https://fastapi.tiangolo.com/advanced/async-tests/)
+
+[sqlalchemy events](https://docs.sqlalchemy.org/en/14/orm/events.html)
+
+[how sqlalchemy sessions work](https://docs.sqlalchemy.org/en/13/orm/session_basics.html)
+
+[sqlalchemy queries](https://docs.sqlalchemy.org/en/14/tutorial/orm_data_manipulation.html#tutorial-orm-data-manipulation)
