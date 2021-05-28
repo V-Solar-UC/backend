@@ -22,3 +22,9 @@ async def create_engine(app: FastAPI) -> None:
     logger.info('CREATED SQLALCHEMY ENGINE')
 
     app.state.async_session = async_session
+    app.state._engine = engine
+
+
+async def release_connections(app: FastAPI) -> None:
+    # TODO: there might be better ways to close all connections
+    await app.state._engine.dispose()

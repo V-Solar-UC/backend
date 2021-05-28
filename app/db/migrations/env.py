@@ -7,6 +7,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.sql import text
 
 from app.core.config import DATABASE_URL
 from app.core.config import POSTGRES_DB
@@ -70,16 +71,13 @@ async def run_migrations_online():
         'TESTING') else DATABASE_URL
 
     if os.environ.get('TESTING'):
-        logger.info('RUNNING ON TEST DATABASE')
         # connect to primary db
         engine = create_async_engine(
-            DB_URL, isolation_level='AUTOCOMMIT')
-        # drop testing db if it exists and create a fresh one
+            DATABASE_URL, echo=True, isolation_level='AUTOCOMMIT')
+
         async with engine.connect() as connection:
-            # TODO: try if it works replacig string with
-            # target_metadata.drop_all etc
-            await connection.execute(f'DROP DATABASE IF EXISTS {POSTGRES_DB}_test')
-            await connection.execute(f'CREATE DATABASE {POSTGRES_DB}_test')
+            await connection.execute(text(f'DROP DATABASE IF EXISTS {POSTGRES_DB}_test'))
+            await connection.execute(text(f'CREATE DATABASE {POSTGRES_DB}_test'))
 
     connectable = config.attributes.get('connection', None)
     config.set_main_option('sqlalchemy.url', DB_URL)
