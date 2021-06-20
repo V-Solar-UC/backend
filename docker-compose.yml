@@ -8,6 +8,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB-postgres}
       POSTGRES_USER: ${POSTGRES_USER-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-postgres}
+    env_file: .env
     volumes:
       - dbdata:/var/lib/postgresql/data
     ports:
@@ -16,6 +17,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     restart: unless-stopped
+    env_file: .env
     depends_on:
       - db
     environment:
@@ -31,6 +33,7 @@ services:
       args:
         - INSTALL_DEV=${INSTALL_DEV:-false}
     restart: unless-stopped
+    env_file: .env
     environment:
       POSTGRES_DB: ${POSTGRES_DB-postgres}
       POSTGRES_USER: ${POSTGRES_USER-postgres}
