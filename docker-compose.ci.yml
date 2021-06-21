@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB-postgres}
+      POSTGRES_USER: ${POSTGRES_USER-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-postgres}
+    ports:
+      - ${POSTGRES_LOCAL_PORT-5432}:5432
+
+  api:
+    build:
+      context: .
+      args:
+        - INSTALL_DEV=true
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB-postgres}
+      POSTGRES_USER: ${POSTGRES_USER-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-postgres}
+      POSTGRES_HOST: ${POSTGRES_HOST-db}
+    depends_on:
+      - db
+    command: sh -c "poetry run pytest -v -s"
+    ports:
+      - 3001:8000
+    volumes:
+      - '.:/app'
