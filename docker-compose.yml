@@ -5,14 +5,14 @@ services:
     image: postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB-postgres}
-      POSTGRES_USER: ${POSTGRES_USER-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     env_file: .env
     volumes:
       - dbdata:/var/lib/postgresql/data
     ports:
-      - ${POSTGRES_LOCAL_PORT-5432}:5432
+      - ${POSTGRES_LOCAL_PORT:-5432}:5432
 
   pgadmin:
     image: dpage/pgadmin4
@@ -31,14 +31,14 @@ services:
     build:
       context: .
       args:
-        - INSTALL_DEV=${INSTALL_DEV:-false}
+        - INSTALL_DEV=${INSTALL_DEV:-true}
     restart: unless-stopped
     env_file: .env
     environment:
-      POSTGRES_DB: ${POSTGRES_DB-postgres}
-      POSTGRES_USER: ${POSTGRES_USER-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-postgres}
-      POSTGRES_HOST: ${POSTGRES_HOST-db}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_HOST: ${POSTGRES_HOST:-db}
     depends_on:
       - db
     command: sh -c "poetry run alembic upgrade head &&
