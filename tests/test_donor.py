@@ -6,7 +6,7 @@ from starlette.status import HTTP_404_NOT_FOUND
 from starlette.status import HTTP_409_CONFLICT
 
 donor = {
-    'name': 'donor1', 'logo_path': '/path/to/file'
+    'name': 'donor1'
 }
 
 body = {
