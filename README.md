@@ -22,6 +22,10 @@ despues de clonar el repositorio:
 
 `docker compose exec api poetry run alembic downgrade base`
 
+## auto-generate migration scripts from models:
+
+`docker compose exec api poetry run alembic revision --autogenerate -m "<migration name>"`
+
 ### connect to postgres:
 
 `docker compose exec db psql -h localhost -U postgres --dbname=<dbname>`
