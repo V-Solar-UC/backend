@@ -41,7 +41,7 @@ class New(Base):
     last_edit_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     author_id = Column(Integer, ForeignKey('users.user_id'))
-    author = relationship('User', back_populates='contents')
+    author = relationship('User', back_populates='news')
 
 
 class Announcement(Base):
@@ -60,7 +60,7 @@ class Donor(Base):
     """ individuals who donate money """
     __tablename__ = 'donors'
     id = Column('donor_id', Integer, primary_key=True)
-    name = Column(String, index=True)
+    name = Column(String, unique=True, index=True)
 
 
 class Sponsor(Base):
