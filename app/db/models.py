@@ -1,9 +1,7 @@
 import datetime
-import enum
 
 from sqlalchemy import Column
 from sqlalchemy import DateTime
-from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
@@ -17,48 +15,57 @@ Base = declarative_base()
 class User(Base):
     """ v-solar members user table """
     __tablename__ = 'users'
-    id = Column('user_id', Integer, primary_key=True, index=True)
-    username = Column('username', String, unique=True, index=True)
+    id = Column('user_id', Integer, primary_key=True)
+    username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
+    name = Column(String, index=True)
+    career = Column(String)
+    team = Column(String, index=True)
     profile_photo_path = Column(String, unique=True)
-    career = Column(String, index=True)
-    role = Column(String)
-    contents = relationship('Content')
+
+    news = relationship('New', back_populates='author')
+    announcements = relationship('Announcement', back_populates='author')
+
+
+class New(Base):
+    """ content metadata information """
+    __tablename__ = 'news'
+    id = Column('new_id', Integer, primary_key=True)
+    title = Column(String, unique=True, index=True)
+    subtitle = Column(String)
+    reading_time = Column(Integer)
+    subject = Column(String)
+    content_dir = Column(String, unique=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    last_edit_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    author_id = Column(Integer, ForeignKey('users.user_id'))
+    author = relationship('User', back_populates='contents')
+
+
+class Announcement(Base):
+    """ announcements in home page """
+    __tablename__ = 'announcements'
+    id = Column('announcement_id', Integer, primary_key=True)
+    title = Column(String, index=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    last_edit_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    author_id = Column(Integer, ForeignKey('users.user_id'))
+    author = relationship('User', back_populates='announcements')
 
 
 class Donor(Base):
-    """ table for individuals who donate money """
+    """ individuals who donate money """
     __tablename__ = 'donors'
-    id = Column('donor_id', Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True)
-    logo_path = Column(String, unique=True)
+    id = Column('donor_id', Integer, primary_key=True)
+    name = Column(String, index=True)
 
 
 class Sponsor(Base):
-    """
-    table for organizations supporting v-solar with
-    any kind of resources
-    """
+    """ organizations supporting v-solar """
     __tablename__ = 'sponsors'
-    id = Column('sponsor_id', Integer, primary_key=True, index=True)
+    id = Column('sponsor_id', Integer, primary_key=True)
     name = Column(String, unique=True)
     logo_path = Column(String, unique=True)
-
-
-class ContentEnum(enum.Enum):
-    video = 0
-    blog = 1
-    news = 2
-    update = 3
-
-
-class Content(Base):
-    """ content metadata information """
-    __tablename__ = 'contents'
-    id = Column('content_id', Integer, primary_key=True, index=True)
-    content_dir = Column(String, unique=True)
-    author_id = Column(Integer, ForeignKey('users.user_id'))
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    last_edit_at = Column(DateTime)
-    type = Column(Enum(ContentEnum), index=True)
