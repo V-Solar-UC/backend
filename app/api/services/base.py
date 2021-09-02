@@ -17,18 +17,18 @@ from app.db.models import Base
 ModelType = TypeVar('ModelType', bound=Base)
 CreateSchemaType = TypeVar('CreateSchemaType', bound=BaseModel)
 
-# TODO: update query
-
 
 class BaseService:
 
-    @staticmethod
+    model: Type[ModelType] = None
+
+    @classmethod
     async def find(
-            model: Type[ModelType],
+            cls,
             session: AsyncSession,
             id: int
     ) -> Type[ModelType]:
-        q = select(model).where(model.id == id)
+        q = select(cls.model).where(cls.model.id == id)
         result = await session.execute(q)
         instance = result.scalars().first()
         if not instance:
@@ -38,23 +38,23 @@ class BaseService:
             )
         return instance
 
-    @staticmethod
+    @classmethod
     async def find_all(
-            model: Type[ModelType],
+            cls,
             session: AsyncSession
     ) -> List[Type[ModelType]]:
-        q = select(model)
+        q = select(cls.model)
         result = await session.execute(q)
         return result.scalars().all()
 
-    @staticmethod
+    @classmethod
     async def create(
-            model: Type[ModelType],
+            cls,
             session: AsyncSession,
             obj_in: Type[CreateSchemaType]
     ) -> Type[ModelType]:
         try:
-            new_obj = model(**obj_in.dict())
+            new_obj = cls.model(**obj_in.dict())
             session.add(new_obj)
             await session.commit()
             return new_obj
@@ -62,8 +62,9 @@ class BaseService:
             raise HTTPException(status_code=HTTP_409_CONFLICT,
                                 detail='object exists')
 
-    @staticmethod
+    @classmethod
     async def delete(
+            cls,
             session: AsyncSession,
             obj: Type[ModelType]
     ) -> None:
