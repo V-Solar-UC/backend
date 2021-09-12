@@ -22,7 +22,7 @@ class User(Base):
     name = Column(String, index=True)
     career = Column(String)
     team = Column(String, index=True)
-    profile_photo_path = Column(String, unique=True)
+    profile_photo_path = Column(String)
 
     news = relationship('New', back_populates='author')
     announcements = relationship('Announcement', back_populates='author')

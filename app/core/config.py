@@ -8,6 +8,10 @@ config = Config('.env')
 PROJECT_NAME = 'V-Solar backend'
 VERSION = '0.1.0'
 
+SECRET_KEY: Secret = config('SECRET_KEY', cast=Secret, default='clave-ultra-secreta')
+ALGORITHM = 'HS256'
+ACCESS_TOKEN_EXPIRE_HOURS = 24
+
 POSTGRES_DB: str = config('POSTGRES_DB', cast=str)
 POSTGRES_USER: str = config('POSTGRES_USER', cast=str)
 POSTGRES_PASSWORD: Secret = config('POSTGRES_PASSWORD', cast=Secret)

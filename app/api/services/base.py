@@ -22,6 +22,11 @@ class BaseService:
 
     model: Type[ModelType] = None
 
+    """
+    TODO: Definir un método find_by() en donde le pases el atributo
+          y el valor deseado, y luego te retorne la instancia.
+    """
+
     @classmethod
     async def find(
             cls,
