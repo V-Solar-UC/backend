@@ -1,3 +1,4 @@
+from typing import Any
 from typing import List
 from typing import Type
 from typing import TypeVar
@@ -14,6 +15,7 @@ from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
 
 from app.db.models import Base
 
+
 ModelType = TypeVar('ModelType', bound=Base)
 CreateSchemaType = TypeVar('CreateSchemaType', bound=BaseModel)
 
@@ -21,6 +23,23 @@ CreateSchemaType = TypeVar('CreateSchemaType', bound=BaseModel)
 class BaseService:
 
     model: Type[ModelType] = None
+
+    @classmethod
+    async def find_by(
+            cls,
+            session: AsyncSession,
+            attribute: str,
+            value: Any
+    ) -> Type[ModelType]:
+        q = select(cls.model).where(getattr(cls.model, attribute) == value)
+        result = await session.execute(q)
+        instance = result.scalars().first()
+        if not instance:
+            raise HTTPException(
+                status_code=HTTP_404_NOT_FOUND,
+                detail='object not found'
+            )
+        return instance
 
     @classmethod
     async def find(
