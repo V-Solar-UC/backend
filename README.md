@@ -34,6 +34,10 @@ despues de clonar el repositorio:
 
 `docker compose exec api poetry run pytest -v -s (-s is optional, outputs logs to stdout)`
 
+### run linter:
+
+`docker compose exec api poetry run flake8`
+
 ## libraries:
 
 - **poetry**: dependency management

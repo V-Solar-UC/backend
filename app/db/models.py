@@ -7,6 +7,7 @@ from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.elements import Null
 
 
 Base = declarative_base()
@@ -22,7 +23,7 @@ class User(Base):
     name = Column(String, index=True)
     career = Column(String)
     team = Column(String, index=True)
-    profile_photo_path = Column(String, unique=True)
+    profile_photo_path = Column(String, default=Null)
 
     news = relationship('New', back_populates='author')
     announcements = relationship('Announcement', back_populates='author')
