@@ -41,7 +41,6 @@ async def get_all_users(
         session: AsyncSession = Depends(get_session)
 ) -> Any:
     users = await UserService.find_all(session)
-    print(users)
     return users
 
 
