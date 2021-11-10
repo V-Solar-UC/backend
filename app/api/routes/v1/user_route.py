@@ -9,6 +9,7 @@ from starlette.status import HTTP_200_OK
 from starlette.status import HTTP_201_CREATED
 
 from app.api.dependencies.session import get_session
+from app.api.middlewares.session_middlewares import get_current_user
 from app.api.services.user import UserService
 from app.schemas.user import UserCreate
 from app.schemas.user import UserOut
@@ -25,6 +26,13 @@ async def create_user(
 
     user = await UserService.create_user(session, new_user)
     return user
+
+
+@router.get('/me', status_code=HTTP_200_OK)
+async def get_user_info(
+        current_user: UserOut = Depends(get_current_user),
+) -> Any:
+    return current_user
 
 
 @router.get('/{id}', response_model=UserOut, status_code=HTTP_200_OK)

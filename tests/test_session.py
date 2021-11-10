@@ -4,6 +4,7 @@ from jose import jwt
 from starlette.status import HTTP_200_OK
 from starlette.status import HTTP_401_UNAUTHORIZED
 
+from app.api.routes.v1.session_route import AUTH_HEADER
 from app.core import config
 from app.schemas.user import UserDB
 
@@ -44,12 +45,9 @@ async def test_login_user(
     res = await client.post('/v1/session/login', json=payload)
     assert res.status_code == status_code
     if status_code == HTTP_200_OK:
-        assert 'authorization' in res.headers
-        assert 'access_token' in res.headers.get('set-cookie')
+        assert AUTH_HEADER in res.headers
 
-        cookie: str = res.headers.get('set-cookie')
-        access_token = cookie.split(';')[0].split('=')[1]
-        csrf = res.headers.get('authorization').split()[1]
+        access_token = res.headers.get(AUTH_HEADER).split()[1]
         token_payload = jwt.decode(
             access_token,
             str(config.SECRET_KEY),
@@ -57,4 +55,3 @@ async def test_login_user(
         )
 
         assert user.username == token_payload.get('sub')
-        assert csrf == token_payload.get('csrf')

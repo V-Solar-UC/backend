@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timedelta
-from secrets import token_hex
 from typing import Optional
 
 from fastapi import HTTPException
@@ -53,7 +52,7 @@ class UserService(BaseService):
         Método para autenticar a un usuario.
 
         :param credentials: email y password de un usuario.
-        :returns: jwt, csrf_token y datos del usuario.
+        :returns: jwt, datos del usuario.
         :raises HTTPException: el password no coincide con su hash.
         :raises HTTPException: el usuario con el email solicitado no existe.
         """
@@ -65,13 +64,11 @@ class UserService(BaseService):
                 status_code=HTTP_401_UNAUTHORIZED,
                 detail='Incorrect credentials'
             )
-
-        csrf_token = token_hex(16)
         jwt_expires = timedelta(hours=config.ACCESS_TOKEN_EXPIRE_HOURS)
-        jwt_data = {'sub': user.username, 'csrf': csrf_token}
+        jwt_data = {'sub': user.username}
         jwt = cls.create_access_token(jwt_data, jwt_expires)
 
-        return jwt, csrf_token, user
+        return jwt, user
 
     @classmethod
     async def create_user(
