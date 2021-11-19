@@ -3,7 +3,6 @@ from typing import Optional
 
 
 class UserBase(BaseModel):
-    username: str
     email: str
     name: str
     career: str
@@ -30,6 +29,8 @@ class UserUpdate(UserBase):
 
 
 class UserDB(UserBase):
+    username: str
+
     class Config:
         orm_mode = True
 
