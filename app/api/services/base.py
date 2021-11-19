@@ -9,7 +9,8 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.status import HTTP_404_NOT_FOUND
+from sqlalchemy.sql.expression import update
+from starlette.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 from starlette.status import HTTP_409_CONFLICT
 from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
 
@@ -80,6 +81,21 @@ class BaseService:
         except IntegrityError:
             raise HTTPException(status_code=HTTP_409_CONFLICT,
                                 detail='object exists')
+
+    @classmethod
+    async def put(
+        cls,
+        session: AsyncSession,
+        obj: Type[ModelType],
+        id,
+        new_values
+    ) -> Type[ModelType]:
+        try:
+            new_data = update(cls.model).where(obj.id == id).values(**new_values)
+            await session.execute(new_data)
+            await session.commit()
+        except SQLAlchemyError:
+            HTTPException(status_code=HTTP_400_BAD_REQUEST)
 
     @classmethod
     async def delete(
