@@ -4,6 +4,7 @@ from typing import List
 from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_200_OK
 from starlette.status import HTTP_201_CREATED
@@ -12,6 +13,7 @@ from app.api.dependencies.session import get_session
 from app.api.middlewares.session_middlewares import get_current_user
 from app.api.services.user import UserService
 from app.schemas.user import UserCreate
+from app.schemas.user import UserUpdate
 from app.schemas.user import UserOut
 
 
@@ -50,6 +52,18 @@ async def get_all_users(
 ) -> Any:
     users = await UserService.find_all(session)
     return users
+
+
+@router.put('/{id}', response_model=UserOut, status_code=HTTP_200_OK)
+async def update_user(
+        id: int,
+        user_data: UserUpdate = Body(..., embed=True),
+        session: AsyncSession = Depends(get_session)
+) -> Any:
+    update_user_encoded = jsonable_encoder(user_data)
+    user = await UserService.find(session, id)
+    await UserService.put(session, user, id, update_user_encoded)
+    return user
 
 
 @router.delete('/{id}', response_model=UserOut, status_code=HTTP_200_OK)

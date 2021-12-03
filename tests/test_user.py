@@ -7,7 +7,6 @@ from starlette.status import HTTP_409_CONFLICT
 
 
 user = {
-    'username': 'test_2',
     'name': 'test name 2',
     'career': 'test career',
     'team': 'team test',
@@ -17,7 +16,6 @@ user = {
 }
 
 user_2 = {
-    'username': 'test_3',
     'name': 'test name 3',
     'career': 'test career',
     'team': 'team test',
@@ -51,5 +49,6 @@ async def test_create_user(
     if status_code == HTTP_201_CREATED:
         copy_user = copy.copy(user)
         copy_user['id'] = res.json()['id']
+        copy_user['username'] = res.json()['username']
         del copy_user['password']
         assert res.json() == copy_user

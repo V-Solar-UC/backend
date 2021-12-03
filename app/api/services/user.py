@@ -82,10 +82,11 @@ class UserService(BaseService):
         :param user_data: datos del usuario a crear.
         :returns: la instancia del usuario creado.
         """
+        username = await cls.default_username(user_data.name, session)
         hashed_password = cls.password_hash(user_data.password)
         user = await cls.create(
             session,
-            UserInDB(**user_data.dict(), hashed_password=hashed_password)
+            UserInDB(**user_data.dict(), hashed_password=hashed_password, username=username)
         )
         return user
 
@@ -96,3 +97,22 @@ class UserService(BaseService):
     @classmethod
     def password_hash(cls, password) -> str:
         return cls.pwd_context.hash(password)
+
+    @classmethod
+    async def default_username(cls, name, session) -> str:
+        names = name.split(" ")
+        username = ""
+        for i in range(len(names) - 1):
+            username += names[i][0]
+        username += names[-1]
+        username = username.lower()
+        full_username = username
+        counter = 0
+        while True:
+            try:
+                users = await cls.find_by(session, 'username', full_username)
+                print(users)
+            except HTTPException:
+                return full_username
+            full_username = username + str(counter)
+            counter += 1
